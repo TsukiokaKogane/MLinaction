@@ -131,7 +131,7 @@ if __name__ == '__main__':
     cnt = 0
     train_n = len(train_data)
     test_n = len(test_data)
-    net = Net(d=4, q=8, ll=3, eta=0.05)
+    net = Net(d=4, q=10, ll=3, eta=0.05)
     while cnt < iteration:
         err = 0.0
         for i in range(train_n):
