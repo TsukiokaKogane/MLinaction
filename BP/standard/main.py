@@ -24,12 +24,12 @@ class Net(object):
         self.ll = ll
         self.eta = eta
 
-        self.v = [[[rand()] for i in range(d)] for j in range(q)]
+        self.v = [[[rand()] for i in range(q)] for j in range(d)]
         self.gamma = [[rand()] * q]
-        self.w = [[[rand()] for i in range(q)] for j in range(ll)]
+        self.w = [[[rand()] for i in range(ll)] for j in range(q)]
         self.theta = [[rand()] * ll]
 
-    def loss(self, x, y):
+    def forward(self, x, y):
         assert isinstance(x, list) == True
         assert len(x) == self.d
         alpha = [[0.0] for i in range(self.q)]
@@ -55,9 +55,29 @@ class Net(object):
         g = [[0.0] for i in range(self.ll)]
         for j in range(self.ll):
             g[j] = y_[j] * (y_[j] - y[j]) * (1.0 - y_[j])
-        e = [[0.0] for i in range()]
 
-        return squared_error(y, y_), y_, g,
+        e = [[0.0] for i in range(self.q)]
+        for h in range(self.q):
+            for j in range(self.ll):
+                e[h] += g[j] * self.w[h][j] * b[h] * (1.0 - b[h])
+
+        return y_, g, e, b
+
+    def backward(self, g, e, b, x):
+        for h in range(self.q):
+            for j in range(self.ll):
+                self.w[h][j] = self.w[h][j] - self.eta * g[j] * b[h]
+
+        for j in range(self.ll):
+            self.theta[j] = self.theta[j] + self.eta * g[j]
+
+        for i in range(self.d):
+            for h in range(self.q):
+                self.v[i][h] = self.v[i][h] - self.eta * e[h] * x[i]
+
+        for h in range(self.q):
+            self.gamma[h] = self.gamma[h] + self.eta * e[h]
+
 
 
 if __name__ == '__main__':
