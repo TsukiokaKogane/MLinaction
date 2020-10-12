@@ -17,9 +17,12 @@ rawdata = [
 ]
 
 domain = [
+    [],
     ['<30', '30-40', '>40'],
     ['High', 'Medium', 'Low'],
     ['Yes', 'No'],
     ['Fair', 'Excellent'],
     ['Yes', 'No']
 ]
+
+attr = ['', 'age', 'income', 'student', 'credit_rating', 'buys_computer']
