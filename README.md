@@ -1,5 +1,6 @@
-# BP neural network
+# Neural Networks
  
+ ## BP
  -  [x] standard
  -  [x] accumulated
 
