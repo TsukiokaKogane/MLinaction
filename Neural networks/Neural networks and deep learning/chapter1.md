@@ -36,6 +36,7 @@ $$
 \tag{3}
 \sigma(z) \equiv \frac{1}{1 + e^{-z}}
 $$
+
 [^1]:$\sigma$ is sometimes called the logistic function, and this new class of neurons called logistic neurons.
 
 By using the actual $\sigma$ function we get a $\textbf{smoothed}$ out perceptron. The smoothness of $\sigma$ means that small changes $\Delta w_j$ in the weights and $\Delta b$ in the bias will produce a small change $\Delta \text{output}$ in the output from the neuron.
@@ -44,6 +45,7 @@ $$
 \Delta \text{output} = \sum_j{ \frac{\partial \text{ output}}{\partial w_j} \Delta w_j + \frac{\partial \text{ output}}{\partial b} \Delta b} 
 $$
 $\textbf{intuition:}$ $\Delta \text{output}$ is a linear function of the changes $\Delta w_j$ and $\Delta b$ in the $weights$ and $bias$. This linearity makes it easy to choose small changes in the weights and biases to achieve any desired small change in the output. 
+
 ### Further discussion
 - activation function: it's the $\textbf{shape}$ of $\sigma$ which really matters, and not its exact form. However, when we compute those partial derivatives in $(4)$, using $\sigma$ will simplify the algebra. In any case, $\sigma$ is commonly-used in work on neural nets, and is the activation function we'll use most often.
 
@@ -61,3 +63,70 @@ split the problem of recognizing handwritten digits into two sub-problems:
 - classifying individual digits 
 To recognize individual digits we will use a three-layer neural network:
 ![neuralnetwork](img/network2.png)
+
+## Learning with gradient descent
+- notation $x$ to denote a training input.
+- regard each training input $x$ as a $28×28=784$-dimensional vector
+- denote the corresponding desired output by $y=y(x)$ , where $y$ is a $10$-dimensional vector. 
+$\textbf{cost function}$[^2]:
+$$
+\tag{5}
+C(w,b) = \frac{1}{2n}||y(x)-a||^2
+$$
+- $w$ denotes the collection of all weights in the network, 
+- $b$ denotes all the biases, 
+- $n$ is the total number of training inputs, a
+- $a$ is the vector of outputs from the network when $x$ is input.
+
+our $\textbf{goal}$ in training a neural network is to find weights and biases which minimize the quadratic cost function $C(w,b)$.
+
+Calculus tells us that $C$ changes as follows:
+$$
+\tag{6}
+\Delta C \approx \frac{\partial C}{\partial w}\Delta w + \frac{\partial C}{\partial b}\Delta b
+$$
+
+We denote the gradient vector by :
+$$
+\tag{7}
+\nabla C \equiv \left(\frac{\partial C}{\partial w}, \frac{\partial C}{\partial b} \right)^T
+$$
+Let $\Delta v \equiv (\Delta w, \Delta b)$
+With these definitions, the expression $(6)$ for $\Delta C$ an be rewritten as:
+$$
+\tag{8}
+\Delta C \approx \nabla C \cdot \Delta v
+$$
+suppose we choose:
+$$
+\tag{9}
+\Delta v = - \eta \nabla C
+$$
+where $\eta$ is a small, positive parameter (known as the $learning$ $rate$). Then Equation $(8)$ tells us that $\Delta C \approx \nabla C \cdot \Delta v = - \eta ||\nabla C||^2$, Because $||\nabla C||^2 \geq 0$, this guarantees that $\Delta C \leq 0$, so $C$ will always decrease.
+
+gradient descent is the $\textbf{optimal}$ strategy for searching for a minimum:
+constrain the size of the move so that $||\Delta v||=ϵ$ for some small fixed $ϵ>0$. The optimal strategy is equivalent to find the movement direction which decreases $C$ as much as possible. It can be proved that the choice of $\Delta v$ which minimizes $\nabla C \cdot \Delta v$ is $\Delta v = - \eta \nabla C$, where $\eta = \frac{\epsilon}{||\nabla C||}$ determined by the size constraint $||\Delta v|| = \epsilon$.
+$\text{proof:}$ 
+$$
+||\nabla C \cdot \Delta v|| \leq  ||\nabla C||\cdot ||\Delta v|| = \epsilon ||\nabla C|| (\text{Cauchy-Schwarz inequality})\\ 
+\text{when } \Delta v =  - \eta \nabla C \\
+\nabla C \cdot \Delta v = - \eta ||\nabla C||^2 = - \epsilon ||\nabla C|| \\
+$$
+
+$\textbf{intuition:}$ gradient descent can be viewed as a way of taking small steps in the direction which does the most to immediately decrease $C$.
+
+#### stochastic gradient descent:
+$\textbf{intuition: }$ estimate the gradient $\nabla C$ by computing $\nabla C_x$ for a small sample of randomly chosen training inputs.
+-  randomly picking out a small number $m$ of randomly chosen training inputs, label those random training inputs $X_1, X_2, ..., X_m$ , and refer to them as a mini-batch. 
+- training with those
+$$
+\tag{10}
+w_k \rightarrow w_k' = w_k - \frac{\eta}{m} \sum_j{\frac{\partial C_{X_j}}{\partial w_k}}
+$$
+$$
+\tag{11}
+b_l \rightarrow b_l' = b_l -  \frac{\eta}{m} \sum_j{\frac{\partial C_{X_j}}{\partial b_l}}
+$$
+where the sums are over all the training examples $X_j$ in the current mini-batch.
+[^2]:Sometimes referred to as a loss or objective function.
+
